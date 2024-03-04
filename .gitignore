@@ -1,0 +1,9 @@
+# virtual environments
+renv/
+venv/
+
+# api credentials
+tfl_api.yml
+
+# .DS_Store file
+.DS_Store
