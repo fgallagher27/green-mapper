@@ -1,0 +1,6 @@
+default:
+    
+    # Specify model start and end here
+    points:
+        start: "SW1A1AA" # Buckingham Palace
+        end: "EC3N4AB" # Tower of London
