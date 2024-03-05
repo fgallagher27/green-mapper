@@ -15,4 +15,5 @@ dependencies:
   - matplotlib
   - pyyaml
   - omegaconf
+  - configparser
   - black
