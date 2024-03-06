@@ -13,7 +13,6 @@ dependencies:
   - rasterio
   - xarray
   - matplotlib
-  - pyyaml
+  - folium
   - omegaconf
-  - configparser
   - black
