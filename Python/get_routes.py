@@ -6,24 +6,174 @@ transport network status
 
 import os
 import requests
-import geopandas as gpd
-from typing import List
+import omegaconf
+import ast
+from typing import List, Union
 
-def extract_route_info() -> gpd.GeoDataFrame:
-    pass
+def get_start_end(file: str = "params.yml") -> tuple[Union[float, str], Union[float, str]]:
+    """
+    Extracts the starting and ending point of the journey from the
+    parameter file `params.yml` and returns as a list.
+    The points in `params.yml` should be either postcodes or 
+    long/lat coordinates.
+    """
+    params = omegaconf.OmegaConf.load(file)
+    return params.default.points.start, params.default.points.end
 
-def retrieve_route(points: List, credentials: List) -> List[str, str]:
-    url = construct_route_url(points, credentials)
 
-    response = requests.get(url)
-    if response.status_code == 200:
-        status = "Successful"
-        content = response.text
-    else:
-        status = f"Failed with status code: {response.status_code}"
+class Credentials():
+    def __init__(self, app_id, app_key):
+        self.app_id = app_id
+        self.app_key = app_key
+
+
+def load_credentials(file: str) -> Credentials:
+    """
+    This function accesses the text file with
+    the TFL API credentials and stores them in
+    a Credentials container
+    """
+    with open(file, 'r') as file:
+        lines = file.readlines()
+
+    app_id = lines[0].replace(" ", "").replace("\n", "").split(':')[1]
+    app_key = lines[1].replace(" ", "").replace("\n", "").split(':')[1]
+
+    return Credentials(app_id, app_key)
+
+
+class Leg():
+    """
+    Contains information about a route leg between two
+    intermediate points based on the dictionary output
+    from the TFL API journey planner
+    """
+    def __init__(self, leg_info: dict, compute_cost: bool = True, compute_env_cost: bool = True):
+        self.duration = leg_info['duration']
+        self.start_point_coord = [leg_info['departurePoint']['lat'], leg_info['departurePoint']['lon']]
+        self.start_point_name = leg_info['departurePoint']['commonName']
+        self.end_point_coord = [leg_info['arrivalPoint']['lat'], leg_info['arrivalPoint']['lon']]
+        self.end_point_name = leg_info['arrivalPoint']['commonName']
     
-    return content, status
+        self.path = (
+            [tuple(self.start_point_coord)] +
+            [tuple(point) for point in ast.literal_eval(leg_info['path']['lineString'])] +
+            [tuple(self.end_point_coord)]
+        )
+
+        self.mode = leg_info['mode']['name']
+        self.line = leg_info['routeOptions'][0]['name']
+
+        self.interchange_duration = leg_info.get('interChangeDuration', None)
+        if leg_info.get('interChangePosition', None) == 'BEFORE':
+            self.interchange_position = 'start'
+        elif leg_info.get('interChangePosition', None) != '':
+            self.interchange_position = 'end'
+        else:
+            self.interchange_position = None
+        
+        self.cost=None
+        if compute_cost:
+            self.cost = self._calc_cost(leg_info)
+        
+        self.co2_cost = None
+        self.air_poll = None
+        if compute_env_cost:
+            self.co2_cost, self.air_poll = self._calc_env_cost(leg_info)
+    
+    def _calc_cost(self, leg_info: dict):
+        return None
+    
+    def _calc_env_cost(selfs, leg_info: dict):
+        return None, None   
 
 
-def construct_route_url(points: List, credentials: List) -> str:
-    return f"https://api.tfl.gov.uk/Journey/JourneyResults/{points[0]}/to/{points[1]}?app_id={credentials.app_id}&app_key={credentials.app_key}"
+class Route():
+    """
+    Contains summary information about a possible route between
+    two points and a dictionary containing each leg as well
+    """
+    def __init__(self, route_info: dict, compute_total_cost: bool = True, compute_env_cost: bool = True):
+        self.total_duration = route_info['duration']
+        self.depart_date_time = route_info['startDateTime']
+        self.arrive_date_time = route_info['arrivalDateTime']
+        self.num_legs = len(route_info['legs'])
+
+        self.legs = {}
+        for i in range(self.num_legs):
+            self.legs[i] = Leg(route_info['legs'][i],compute_total_cost, compute_env_cost)
+        
+        self.total_cost = None
+        if compute_total_cost:
+            self.total_cost = self._calc_total_cost()
+
+        self.total_co2 = None
+        self.total_air_poll = None
+        if compute_env_cost:
+            self.total_co2, self.total_air_poll = self._calc_total_env_cost()
+    
+    def _calc_total_cost(self) -> float:
+        """
+        Calculate the total cost of a journey in GBP
+        """
+        return None
+
+    def _calc_total_env_cost(self) -> tuple[float, float]:
+        return None, None
+
+
+class Journey():
+    """
+    Acts as a container for information relating
+    to a given journey from one point to another
+    """
+
+    def __init__(
+            self,
+            points: tuple[Union[float, str], Union[float, str]],
+            route_params: dict = {},
+            cred_file: str = 'tfl_api.txt',
+        ):
+
+        # load credentials from a text file
+        self.credentials = load_credentials(cred_file)
+        self.start = points[0]
+        self.end = points[1]
+        self.route_params = route_params
+
+        # build url query
+        self.url = self._construct_route_url()
+    
+    def _construct_route_url(self) -> str:
+        """
+        This function uses the start and end points of the
+        journey and api access tokens to construct the
+        TFL API url call.
+        Additional parameters allowed by the API call can be added to
+        the parameter object passed to the class.
+        """
+        base_url = "https://api.tfl.gov.uk/Journey/JourneyResults/"
+        points = f"{self.start}/to/{self.end}"
+        credentials = f"?app_id={self.credentials.app_id}&app_key={self.credentials.app_key}"
+
+        url = base_url + points + credentials
+        for key, value in self.route_params.items():
+            url += f"&{key}={value}"
+
+        return url
+    
+    def retrieve_routes(self):
+        response = requests.get(self.url)
+        if response.status_code == 200:
+            self.status = "Successful"
+            self.full_content = response.json()
+        else:
+            self.status = f"Failed with status code: {response.status_code}"
+            self.full_content = None
+
+    def extract_route_info(self):
+        return None
+
+    def __repr__(self):
+        return f"Journey class from {self.start} to {self.end}"
+    
