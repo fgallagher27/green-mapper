@@ -14,3 +14,10 @@ default:
         alternativeWalking: "true"
         usemMulitModalCall: "true"
         includeAlternativeRoutes: "true"
+    
+    init_map:
+        location:
+        - "51.515419" # lat coord
+        - "-0.141099" # lon coord
+        zoom_start: 13.5
+        tiles: "openstreetmap"
