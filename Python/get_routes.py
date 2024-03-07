@@ -99,9 +99,15 @@ class Route():
         self.arrive_date_time = route_info['arrivalDateTime']
         self.num_legs = len(route_info['legs'])
 
+        # extract info by leg
         self.legs = {}
         for i in range(self.num_legs):
             self.legs[i] = Leg(route_info['legs'][i],compute_total_cost, compute_env_cost)
+
+        # stitch leg paths to get total route path
+        self.path = []
+        for _, leg in self.legs.items():
+            self.path.append(leg['path'])
         
         self.total_cost = None
         if compute_total_cost:
@@ -134,6 +140,12 @@ class Journey():
             route_params: dict = {},
             cred_file: str = 'tfl_api.txt',
         ):
+        """
+        params:
+            points: tuple containing the start and end point of the route
+            route_params: dictionary containing other parameters to pass to API request
+            cred_file: text file holding API access key and id information
+        """
 
         # load credentials from a text file
         self.credentials = load_credentials(cred_file)
@@ -163,6 +175,10 @@ class Journey():
         return url
     
     def retrieve_routes(self):
+        """
+        This function executes the API request using the TFL
+        API and the constructed URL
+        """
         response = requests.get(self.url)
         if response.status_code == 200:
             self.status = "Successful"
@@ -172,8 +188,23 @@ class Journey():
             self.full_content = None
 
     def extract_route_info(self):
-        return None
+        """
+        This function converts the JSON output of the API
+        request to custom classes containing key information
+        and can be used throughout the model
+        """
+        self.num_routes = len(self.full_content['journeys'])
+        self.routes = {}
+        for i in self.full_content:
+            self.routes[i] = Route(self.full_content['journeys'][i])
 
     def __repr__(self):
         return f"Journey class from {self.start} to {self.end}"
-    
+
+
+def extract_start_end(points: List)-> tuple[List[float], List[float]]:
+    """
+    This function takes a list of lists of points and extracts the
+    first and last coordinate pair as lists
+    """
+    return list(points[0][0]), list(points[-1][-1])
