@@ -126,6 +126,20 @@ class Route():
 
     def _calc_total_env_cost(self) -> tuple[float, float]:
         return None, None
+    
+    def _get_modes(self) -> List[str]:
+        """
+        This function accesses the information on
+        each leg and retrieves the modes used, returning
+        a list of strings.
+        Where the mode has a sub level, this is concatenated
+        using a backslash as a seperator:
+        i.e. tube/bakerloo"""
+        modes = []
+        for _, leg in self.legs.items():
+            str = leg.mode + "/" + leg.line
+            modes.append(str)
+        return modes
 
 
 class Journey():
@@ -208,3 +222,4 @@ def extract_start_end(points: List)-> tuple[List[float], List[float]]:
     first and last coordinate pair as lists
     """
     return list(points[0][0]), list(points[-1][-1])
+
