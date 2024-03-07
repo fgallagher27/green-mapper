@@ -137,7 +137,10 @@ class Route():
         i.e. tube/bakerloo"""
         modes = []
         for _, leg in self.legs.items():
-            str = leg.mode + "/" + leg.line
+            if leg.mode == 'tube':
+                str = leg.mode + "/" + leg.line
+            else:
+                str = leg.mode
             modes.append(str)
         return modes
 
