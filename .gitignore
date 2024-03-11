@@ -16,4 +16,4 @@ temp.ipynb
 
 # shp source
 map_data.yml
-build_map.py
+build_map_shp.py
