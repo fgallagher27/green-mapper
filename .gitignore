@@ -13,3 +13,6 @@ tfl_api.txt
 
 # temp notebook
 python/temp.ipynb
+
+# shp source
+map_data.yml
