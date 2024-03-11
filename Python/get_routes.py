@@ -107,7 +107,7 @@ class Route():
         # stitch leg paths to get total route path
         self.path = []
         for _, leg in self.legs.items():
-            self.path.append(leg['path'])
+            self.path.append(leg.path)
         
         self.total_cost = None
         if compute_total_cost:
@@ -212,7 +212,7 @@ class Journey():
         """
         self.num_routes = len(self.full_content['journeys'])
         self.routes = {}
-        for i in self.full_content:
+        for i in range(self.num_routes):
             self.routes[i] = Route(self.full_content['journeys'][i])
 
     def __repr__(self):
