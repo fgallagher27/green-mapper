@@ -14,5 +14,7 @@ dependencies:
   - xarray
   - matplotlib
   - folium
+  - dash
+  - dash_core_components
   - omegaconf
   - black
