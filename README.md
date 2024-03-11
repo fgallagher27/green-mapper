@@ -4,8 +4,6 @@ This project optimises transport routes in London. The route can be optimised ba
 
 ## Table of Contents
 - [Set up](#1-set-up)
-    - [Python](#python-set-up)
-    - [R](#r-set-up)
     - [Building the London transport system map](#building-the-london-transport-system-map)
 
 ## 1. Set up
@@ -16,15 +14,12 @@ app_id: <id here>
 app_key: <key here>
 ```
 
-### Python set up
 To python source code is in the [Python](Python) folder. Once you have cloned the repository, to launch the model using python, please install conda (or your preferred alternative) and run the following command in your terminal:
 ```
 conda env create -f environment.yml
 conda activate green-mapper
 ```
 
-
-### R set up
 
 TBC
 

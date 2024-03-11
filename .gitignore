@@ -12,7 +12,8 @@ tfl_api.txt
 *__pycache__
 
 # temp notebook
-python/temp.ipynb
+temp.ipynb
 
 # shp source
 map_data.yml
+build_map.py
