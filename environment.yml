@@ -13,6 +13,8 @@ dependencies:
   - rasterio
   - xarray
   - matplotlib
-  - pyyaml
+  - folium
+  - dash
+  - dash_core_components
   - omegaconf
   - black

@@ -1,0 +1,23 @@
+default:
+    
+    # Specify model start and end here
+    points:
+        start: "SW1A1AA" # Buckingham Palace
+        end: "EC3N4AB" # Tower of London
+
+    # these parameters match the parameters outlined on TFL API website:
+    # https://api.tfl.gov.uk/swagger/ui/index.html?url=/swagger/docs/v1#!/Journey/Journey_JourneyResults
+    route_params:
+        walkingSpeed: "fast"
+        bikeProficiency: "fast"
+        alternativeCycle: "true"
+        alternativeWalking: "true"
+        usemMulitModalCall: "true"
+        includeAlternativeRoutes: "true"
+    
+    init_map:
+        location:
+        - "51.515419" # lat coord
+        - "-0.141099" # lon coord
+        zoom_start: 13.5
+        tiles: "openstreetmap"

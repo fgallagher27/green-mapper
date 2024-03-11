@@ -3,7 +3,16 @@ renv/
 venv/
 
 # api credentials
-tfl_api.yml
+tfl_api.txt
 
 # .DS_Store file
 .DS_Store
+
+# Python cache
+*__pycache__
+
+# temp notebook
+python/temp.ipynb
+
+# shp source
+map_data.yml
