@@ -1,6 +1,6 @@
 # :bike: green-mapper :metro:
 
-This project optimises transport routes in London. The route can be optimised based on quickest time, shortest distance, or lowest emissions. Python and R versions of the source code are provided (both currently under development).
+This project optimises transport routes in London. The route can be optimised based on quickest time, shortest distance, or lowest emissions. The model runs using Python launching a web app using dash.
 
 ## Table of Contents
 - [Set up](#1-set-up)
