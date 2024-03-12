@@ -1,5 +1,8 @@
 default:
     
+    # specify api credentials file path
+    api_cred: "tfl_api.txt"
+    
     # Specify model start and end here
     points:
         start: "SW1A1AA" # Buckingham Palace
