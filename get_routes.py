@@ -79,26 +79,26 @@ class Leg():
         
         self.cost=None
         if compute_cost:
-            self.cost = self._calc_cost(leg_info)
+            self._calc_cost(leg_info)
         
         self.co2_cost = None
         self.air_poll = None
         if compute_env_cost:
-            self.co2_cost, self.air_poll = self._calc_env_cost(leg_info)
+            self._calc_env_cost()
     
     def _calc_cost(self, leg_info: dict):
-        return None
+        self.cost=None
     
-    def _calc_env_cost(self, leg_info: dict):
+    def _calc_env_cost(self):
         """
         Calculates the environmental impact of the leg.
         Currently includes calculation of CO2 emissions.
         """
         m_to_km = 0.001
-        env_info = EnvImpacts
+        env_info = EnvImpacts()
 
         # average intensity of mode per passenger km * metres * 1/1000
-        self.co2_cost = env_info[self.mode] * self.distance * m_to_km
+        self.co2_cost = env_info.co2[self.mode] * self.distance * m_to_km
 
 
 class Route():
@@ -136,7 +136,7 @@ class Route():
         self.total_co2 = None
         self.total_air_poll = None
         if compute_env_cost:
-            self.total_co2, self.total_air_poll = self._calc_total_env_cost()
+            self._calc_total_env_cost()
     
     def _calc_total_cost(self) -> float:
         """
@@ -149,7 +149,7 @@ class Route():
         Sums up the gCO2e/passenger km across route legs.
         """
         total_co2 = 0.0
-        for _, leg in self.leg.items():
+        for _, leg in self.legs.items():
             total_co2 += leg.co2_cost
         self.total_co2 = total_co2
     

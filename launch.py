@@ -113,7 +113,12 @@ class MapApp():
             # update latest requested route
             self.last_start = start_point
             self.last_end = end_point
-        return [{'label': str(i), 'value': i} for i in range(1, self.journey.num_routes + 1)]
+        
+        route_names = [
+            {'label': f"{id+1} - {' - '.join(route.modes)}", 'value': id}
+            for id, route in self.journey.routes.items()
+        ]
+        return route_names
     
     def update_route_map(
             self,

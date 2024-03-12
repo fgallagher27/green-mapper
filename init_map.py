@@ -29,8 +29,8 @@ class Map(folium.Map):
         # set colour attribute map
         # hex codes from https://blog.tfl.gov.uk/2022/12/22/digital-colour-standard/
         self.colour_map = {
-            'walking': 'grey',
-            'cycle': 'light green',
+            'walking': 'lightgray',
+            'cycle': 'lightgreen',
             'tube/Bakerloo': '#B26300',
             'tube/Central': '#DC241F',
             'tube/Circle': '#FFC80A',
