@@ -4,7 +4,6 @@ This project optimises transport routes in London. The route can be optimised ba
 
 ## Table of Contents
 - [Set up](#1-set-up)
-    - [Building the London transport system map](#building-the-london-transport-system-map)
 - [Launch app](#2-launch)
 
 ## 1. Set up
@@ -15,7 +14,7 @@ app_id: <id here>
 app_key: <key here>
 ```
 
-To python source code is in the [Python](Python) folder. Once you have cloned the repository, to launch the model using python, please install conda (or your preferred alternative) and run the following command in your terminal:
+Once you have cloned the repository, to launch the model using python, please install conda (or your preferred alternative) and run the following command in your terminal:
 ```
 conda env create -f environment.yml
 conda activate green-mapper
@@ -36,4 +35,5 @@ Dash is running on http://127.0.0.1:8050/
  * Debug mode: on
 ```
 
-Just copy and paste the url Dash is running on into a browser of your choice and the app will launch,
+Just copy and paste the url Dash is running on into a browser of your choice and the app will launch. Once you have put in your desired journey and selected a route, it should look like this:
+![An image showing a screengrab of the Green Mapper App. On the LHS are boxes to input a start and end point with a button to get routes and drop down menu to select a route. In the middle is the interactive map with route plotted, and on the RHS are key details about the journey such as simple instructions and total journey time.](img/Screenshot%202024-03-12%20at%2019.29.20.png)
