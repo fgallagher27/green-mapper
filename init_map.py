@@ -47,7 +47,7 @@ class Map(folium.Map):
             'overground': '#FA7B05',
             'dlr': '#00AFAD',
             'bus': '#DC241F',
-            'river': '#039BE5',
+            'river-bus': '#039BE5',
             'cablecar': '#DC241F',
             'tram': '#5FB526'
         }

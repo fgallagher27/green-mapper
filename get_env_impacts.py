@@ -40,6 +40,6 @@ class EnvImpacts():
             'national-rail': 35.0,
 
             # No clear data source so proxies used
-            'river': 29.2, # use overground as proxy - electric motors
+            'river-bus': 29.2, # use overground as proxy - electric motors
             'cablecar': 40.5 * 0.46, # use tram as proxy - electric cable power
         }

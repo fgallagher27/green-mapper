@@ -108,8 +108,8 @@ class Route():
     """
     def __init__(self, route_info: dict, compute_total_cost: bool = True, compute_env_cost: bool = True):
         self.total_duration = route_info['duration']
-        self.depart_date_time = route_info['startDateTime']
-        self.arrive_date_time = route_info['arrivalDateTime']
+        self.depart_date, self.depart_time = route_info['startDateTime'].split("T")
+        self.arrive_date, self.arrive_time = route_info['arrivalDateTime'].split("T")
         self.num_legs = len(route_info['legs'])
 
         # extract info by leg
@@ -128,6 +128,9 @@ class Route():
             # stitch summaries and modes together
             self.summary.append(leg.summary)
             self.modes.append(leg.mode)
+        self.print_summary = ""
+        for index, str in enumerate(self.summary, start=1):
+            self.print_summary += f"{index}.) {str}  \n"
         
         self.total_cost = None
         if compute_total_cost:
@@ -135,6 +138,7 @@ class Route():
 
         self.total_co2 = None
         self.total_air_poll = None
+        self.co2_saving = 0.0
         if compute_env_cost:
             self._calc_total_env_cost()
     

@@ -41,22 +41,74 @@ class MapApp():
         page with headers, inputs/buttons, and output placeholder
         """
         self.app.layout = html.Div([
-            html.H1("Green Mapper"),
-
-            dcc.Input(id='start-point', type='text', placeholder='From..'),
-            dcc.Input(id='end-point', type='text', placeholder='To..'),
-
-            # triggers route display
-            html.Button('Get route options', id='get-routes-button'),
-
-            # Route ID dropdown menu
-            dcc.Dropdown(
-                id='route-id-drop',
-                placeholder='Select route option'
+            html.H1(
+                "Green Mapper",
+                style={
+                    'color': 'green',
+                    'font-family': 'Open Sans, sans-serif',
+                    'text-align': 'center'
+                }
             ),
 
-            # folium map container
-            html.Iframe(id='folium-map', width='100%', height='600px'),
+            html.Div(
+                [
+                    dcc.Input(
+                        id='start-point',
+                        type='text',
+                        placeholder='From..', 
+                        style={'display': 'block'}
+                    ),
+                    dcc.Input(
+                        id='end-point',
+                        type='text',
+                        placeholder='To..',
+                        style={'display': 'block'}
+                    ),
+
+                    # triggers route display
+                    html.Button(
+                        'Get route options',
+                        id='get-routes-button',
+                        style={'display': 'block'}
+                    ),
+
+                    # Route ID dropdown menu
+                    dcc.Dropdown(
+                        id='route-id-drop',
+                        placeholder='Select route option'
+                    ),
+                ],
+                style= {
+                    'width': '22%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                    'padding-left': '1%',
+                }
+            ),
+
+            html.Div(
+                [html.Iframe(id='folium-map', width='100%', height='600px')],
+                style= {
+                    'padding-left': '2%',
+                    'width': '50%',
+                    'display': 'inline-block',
+                    'padding-right': '2%',
+                }
+            ),
+
+            html.Div(
+                [
+                    html.Div(id='route-details'),
+                ],
+                style = {
+                    'width': '22%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                    'font-family': 'Open Sans, sans-serif',
+                    'padding-right': '1%'
+                }
+            ),
+
         ])
 
         # callback for getting routes
@@ -69,11 +121,15 @@ class MapApp():
             ]
         )(self.get_n_routes)
 
-        # callback for plotting routes
+        # callback for plotting routes and updating info
         self.app.callback(
-            Output('folium-map', 'srcDoc'),
+            [
+                Output('folium-map', 'srcDoc'),
+                Output('route-details', 'children')
+            ],
             [Input('route-id-drop', 'value')],
-        )(self.update_route_map)
+        )(self.update_visuals)
+    
     
     def get_routes(
             self,
@@ -138,6 +194,97 @@ class MapApp():
                 return "Please enter a valid route ID"
         else:
             return dash.no_update
+        
+    def update_route_info(self, route_id: int) -> List:
+        """
+        This function updates the route information displayed in the app
+        """
+        route = self.journey.routes[int(route_id)]
+        return [
+
+            html.Div([
+                html.Strong("Departure time: "),
+                html.Div(
+                    route.depart_time,
+                    style={
+                        'border': '1px solid #ccc',
+                        'padding': '10px',
+                        'margin-bottom': '10px'
+                    }
+                ),
+            ]),
+    
+            html.Div([
+                html.Strong("Arrival time: "),
+                html.Div(
+                    route.arrive_time,
+                    style={
+                        'border': '1px solid #ccc',
+                        'padding': '10px',
+                        'margin-bottom': '10px'
+                    }
+                )
+            ]),
+
+            html.Div([
+                html.Strong('Journey time: '),
+                html.Div(
+                    f"{route.total_duration} minutes",
+                    style={
+                        'border': '1px solid #ccc',
+                        'padding': '10px',
+                        'margin-bottom': '10px'
+                    }
+                ),
+            ]),
+
+            html.Div([
+                html.Strong('Instructions: '),
+                dcc.Markdown(
+                    route.print_summary,
+                    style={
+                        'border': '1px solid #ccc',
+                        'padding': '10px',
+                        'margin-bottom': '10px'
+                    }
+                ),
+            ]),
+
+            html.Div([
+                html.Strong("Total emissions (gCO2e): "),
+                html.Div(
+                    route.total_co2,
+                    style={
+                        'border': '1px solid #ccc',
+                        'padding': '10px',
+                        'margin-bottom': '10px'
+                    }
+                ),
+            ]),
+
+            html.Div([
+                html.Strong("Emissions savings (gC02e): "),
+                html.Div(
+                    route.co2_saving,
+                    style={
+                        'border': '1px solid #ccc',
+                        'padding': '10px',
+                        'margin-bottom': '10px'
+                    }
+                ),
+            ])
+ 
+        ]
+    
+    def update_visuals(self, route_id: int) -> tuple:
+        """
+        This wrapper function calls functions to update the map and
+        summary details of the updated route id
+        """
+        map_src_doc = self.update_route_map(route_id)
+        route_blocks = self.update_route_info(route_id)
+
+        return map_src_doc, route_blocks
 
     def run(self):
         self.app.run_server(debug=True)
