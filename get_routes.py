@@ -5,10 +5,12 @@ transport network status
 """
 
 import os
+import math
 import requests
 import omegaconf
 import ast
 from typing import List, Union
+from get_env_impacts import EnvImpacts
 
 def get_start_end(file: str = "params.yml") -> tuple[Union[float, str], Union[float, str]]:
     """
@@ -62,6 +64,7 @@ class Leg():
             [tuple(point) for point in ast.literal_eval(leg_info['path']['lineString'])] +
             [tuple(self.end_point_coord)]
         )
+        self.distance = path_distance(self.path)
 
         self.mode = leg_info['mode']['name']
         self.line = leg_info['routeOptions'][0]['name']
@@ -86,8 +89,16 @@ class Leg():
     def _calc_cost(self, leg_info: dict):
         return None
     
-    def _calc_env_cost(selfs, leg_info: dict):
-        return None, None   
+    def _calc_env_cost(self, leg_info: dict):
+        """
+        Calculates the environmental impact of the leg.
+        Currently includes calculation of CO2 emissions.
+        """
+        m_to_km = 0.001
+        env_info = EnvImpacts
+
+        # average intensity of mode per passenger km * metres * 1/1000
+        self.co2_cost = env_info[self.mode] * self.distance * m_to_km
 
 
 class Route():
@@ -235,3 +246,21 @@ def extract_start_end(points: List)-> tuple[List[float], List[float]]:
     """
     return list(points[0][0]), list(points[-1][-1])
 
+
+def euc_distance(point1: tuple[float, float], point2: tuple[float, float]) -> float:
+    """
+    This function calculates the euclidean distance between two points
+    """
+    return math.sqrt((point2[0] - point1[0])**2 + (point2[0] - point1[0])**2)
+
+
+def path_distance(points: List[tuple[float]]) -> float:
+    """
+    This function applies the euclidean distance formula
+    sequentially to pairs of points in a list to approximate 
+    the total distance of the path described by the entire list.
+    """
+    tot_dist = 0.0
+    for i in range(len(points) -1):
+        tot_dist += euc_distance(points[i], points[i+1])
+    return tot_dist
