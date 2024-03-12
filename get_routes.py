@@ -54,6 +54,8 @@ class Leg():
         self.start_point_name = leg_info['departurePoint']['commonName']
         self.end_point_coord = [leg_info['arrivalPoint']['lat'], leg_info['arrivalPoint']['lon']]
         self.end_point_name = leg_info['arrivalPoint']['commonName']
+
+        self.summary = leg_info['instruction']['summary']
     
         self.path = (
             [tuple(self.start_point_coord)] +
@@ -106,8 +108,15 @@ class Route():
 
         # stitch leg paths to get total route path
         self.path = []
+        self.summary = []
+        self.modes = []
         for _, leg in self.legs.items():
+
+            # stitch leg paths to get total route path
             self.path.append(leg.path)
+            # stitch summaries and modes together
+            self.summary.append(leg.summary)
+            self.modes.append(leg.mode)
         
         self.total_cost = None
         if compute_total_cost:
