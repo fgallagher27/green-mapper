@@ -89,6 +89,9 @@ class Map(folium.Map):
                 opacity=1,
             ).add_to(self)
 
+    def _repr_html_(self):
+        return self.get_root().render()
+
 
 def match_line_to_col(lines: List, modes: List, col_map:dict) -> zip:
     """
