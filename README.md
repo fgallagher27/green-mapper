@@ -5,6 +5,7 @@ This project optimises transport routes in London. The route can be optimised ba
 ## Table of Contents
 - [Set up](#1-set-up)
     - [Building the London transport system map](#building-the-london-transport-system-map)
+- [Launch app](#2-launch)
 
 ## 1. Set up
 
@@ -20,9 +21,19 @@ conda env create -f environment.yml
 conda activate green-mapper
 ```
 
+## 2. Launch
 
-TBC
+Once the [`params.yml`](params.yml) file is up to date with credentials file path, url parameters and base map parameters, the application can be launched by simply running [`launch.py`](launch.py) using the following code:
+```
+python launch.py
+```
 
-### Building the London transport system map
+This should lead to the following output in the terminal:
+```
+Dash is running on http://127.0.0.1:8050/
 
-A map of the london transport system map is built as part of this project. This is a one time exercise that is computationally expensive. Detailed instructions can be found in [`map_data.yml`](map_data.yml).
+ * Serving Flask app 'launch'
+ * Debug mode: on
+```
+
+Just copy and paste the url Dash is running on into a browser of your choice and the app will launch,
