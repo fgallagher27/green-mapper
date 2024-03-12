@@ -12,6 +12,11 @@ class Map(folium.Map):
     This class contains a folium map.
     A journey is then used to plot start, end points
     and the jounrey legs onto the map.
+
+    It inherits the super class of folium.Map
+
+    Attributes:
+        colour_map (dict): dictionary mapping transport mode to colour for plotting
     """
 
     def __init__(
@@ -51,6 +56,10 @@ class Map(folium.Map):
         """
         This function takes a journey class and overlays the route specified
         by route id onto the base map
+
+        Args:
+            journey: a journey class with route information retreived
+            route_id: the float id of the route to plot
         """
 
         # assert route_id is a valid id
@@ -90,6 +99,9 @@ class Map(folium.Map):
             ).add_to(self)
 
     def _repr_html_(self):
+        """
+        Renders a folium map as a html block to be used in the dash app
+        """
         return self.get_root().render()
 
 

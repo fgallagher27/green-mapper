@@ -8,6 +8,12 @@ import os
 
 
 class EnvImpacts():
+    """
+    A container for environmental impact of each transport mode.
+    
+    Attributes:
+        co2 (dict): a dictionary containing gCO2e/passenger km by transport mode
+    """
 
     def __init__(self):
 
