@@ -144,8 +144,14 @@ class Route():
         """
         return None
 
-    def _calc_total_env_cost(self) -> tuple[float, float]:
-        return None, None
+    def _calc_total_env_cost(self):
+        """
+        Sums up the gCO2e/passenger km across route legs.
+        """
+        total_co2 = 0.0
+        for _, leg in self.leg.items():
+            total_co2 += leg.co2_cost
+        self.total_co2 = total_co2
     
     def _get_modes(self) -> List[str]:
         """
