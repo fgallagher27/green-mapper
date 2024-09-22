@@ -8,16 +8,62 @@ from dash import html, dcc
 from dash.dependencies import Input, Output
 import omegaconf
 import folium
+import xarray as xr
 from typing import Union, List, Any
 from init_map import Map
 from get_routes import Journey
+
+
+class User():
+    """
+    This class is a container for user information
+    
+    Attributes:
+        id (int): identifying integer
+        cum_savings (float): cumulative co2 savings to date
+        preferences (sequence(float)): list/array indicating
+            relative preferences for speed vs CO2 etc.
+    """
+    def __init__(self, id: str):
+        self.id = id
+        self.cum_savings = 0.0
+        self.preferences = xr.DataArray([0.5, 0.5],dims=("preferences"), dtype=float)
+    
+    def _update_saved_data(self):
+        self.preferences = self._update_preferences()
+        self.cum_savings = self._update_cum_savings()
+
+    def _update_preferences(self):
+        self.preferences = None
+    
+    def _update_cum_savings(self, add_saving: float):
+        self.cum_savings += add_saving
+
+
+class DataBase():
+    """
+    This class contains many instances of the User class.
+    """
+    def __init__(self):
+        self.users={}
+    
+    def _get_ids(self):
+        return self.users.keys()
+
+    def _add_user(self, user: User):
+        if user.id not in self.users.keys():
+            self.users[user.id] = user
+        else:
+            raise KeyError(f"{user.id} already exists as an id.")
 
 
 class MapApp():
 
     def __init__(
             self,
-            params):
+            params,
+            db: DataBase,
+            id: str):
         """
         This initialises an App class with the base map
         ready to be launched
@@ -28,12 +74,23 @@ class MapApp():
         self.route_params = params.route_params
         self.api_creds = params.api_cred
 
+        self.init_new_user(db, id)
+        self.user = db.users[id]
+
         # init start and end points to keep track of
         self.last_start = None
         self.last_end = None
         self.get_n_routes(0, params.points['start'], params.points['end'])
 
         self.setup_layout()
+    
+    def init_new_user(self, db: DataBase, id: str):
+        """
+        This function creates a new user if the id does
+        not already exist in the database.
+        """
+        if id not in db._get_ids:
+            db._add_user(User(id))
     
     def setup_layout(self):
         """
@@ -292,5 +349,7 @@ class MapApp():
     
 if __name__ == "__main__":
     params = omegaconf.OmegaConf.load('params.yml').default
-    app = MapApp(params)
+    id = params.default.master_id
+    db = DataBase() # update to read in stored database class
+    app = MapApp(params, id, db)
     app.run()

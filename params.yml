@@ -1,4 +1,7 @@
 default:
+
+    # create user id for app database
+    id: "master_id"
     
     # specify api credentials file path
     api_cred: "tfl_api.txt"
